@@ -16,7 +16,7 @@ const authCodeFlowConfig: AuthConfig = {
   // The SPA's id. The SPA is registerd with this id at the auth-server
   // clientId: 'server.code',
   clientId:
-    '494046440277-ja95oc5msea1c8lm8b824p8s6mkb391f.apps.googleusercontent.com',
+    '3379262491-l6eic0h8u5hps6q87rceee3tbi5s10po.apps.googleusercontent.com',
 
   // set the scope for the permissions the client should request
   scope: 'openid profile email https://mail.google.com',

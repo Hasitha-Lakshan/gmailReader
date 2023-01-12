@@ -1,3 +1,6 @@
 export const environment = {
-  production: true
+  production: true,
+  assetsUrl: './',
+  apiEndpointUrl: 'https://gmailreader-backend-production.up.railway.app/api',
+  entryRoute: ''
 };

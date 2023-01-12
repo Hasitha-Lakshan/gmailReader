@@ -1,6 +1,10 @@
 import { Component } from '@angular/core';
+import * as moment from 'moment';
 import { lastValueFrom } from 'rxjs';
 import { GoogleService, UserInfo } from './shared/google.service';
+import { Gmail, MappedGmail } from './shared/models/gmail';
+import { InvoiceSaveRequest } from './shared/models/invoice';
+import { InvoiceService } from './shared/services/invoice.service';
 
 @Component({
   selector: 'app-root',
@@ -8,12 +12,14 @@ import { GoogleService, UserInfo } from './shared/google.service';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-  title = 'angular-google-oauth-example';
-
-  mailSnippets: any[] = [];
+  // gmailData: MappedGmail[] = [];
   userInfo?: UserInfo;
+  // mappedGmailData!: InvoiceRequest;
 
-  constructor(private readonly googleApi: GoogleService) {
+  constructor(
+    private readonly googleApi: GoogleService,
+    private readonly invoiceService: InvoiceService
+  ) {
     googleApi.userProfileSubject.subscribe((info) => {
       this.userInfo = info;
     });
@@ -28,7 +34,7 @@ export class AppComponent {
   }
 
   async getEmails() {
-    this.mailSnippets = [];
+    // this.gmailData = [];
     if (!this.userInfo) {
       return;
     }
@@ -37,22 +43,73 @@ export class AppComponent {
     const messages = await lastValueFrom(this.googleApi.emails(userId));
     messages.messages.forEach((element: any) => {
       const mail = lastValueFrom(this.googleApi.getMail(userId, element.id));
-      mail.then((mail) => {
-        mail.payload.headers.forEach((header: header) => {
-          if (header.name === 'Subject' && header.value.includes('invoice')) {
-            this.mailSnippets.push({
+      mail
+        .then((mail: Gmail) => {
+          const index = mail.payload.headers.findIndex(
+            (header) => header.name === 'Subject'
+          );
+          if (
+            index > -1 &&
+            mail.payload.headers[index].value.includes('invoice')
+          ) {
+            return {
               id: mail.id,
               threadId: mail.threadId,
               snippet: mail.snippet,
               headers: mail.payload.headers,
-            });
+            };
+          }
+          return null;
+        })
+        .then((mappedGmail) => {
+          if (mappedGmail !== null) {
+            this.mapInvoiceData(mappedGmail);
           }
         });
-      });
     });
   }
-}
-export interface header {
-  name: string;
-  value: string;
+
+  mapInvoiceData(mappedMail: MappedGmail) {
+    if (mappedMail) {
+      const invoiceRequest = {
+        id: mappedMail.id,
+        subject: '',
+        body: mappedMail.snippet,
+        date: '',
+        invoiceFrom: '',
+        invoiceTo: '',
+      };
+
+      mappedMail.headers.forEach((header) => {
+        if (header.name === 'Subject') {
+          invoiceRequest.subject = header.value;
+        }
+        if (header.name === 'Date') {
+          invoiceRequest.date = moment(header.value).format(
+            'DD-MM-yyyy hh:mm:ss a'
+          );
+        }
+        if (header.name === 'From') {
+          invoiceRequest.invoiceFrom = header.value;
+        }
+        if (header.name === 'To') {
+          invoiceRequest.invoiceTo = header.value;
+        }
+      });
+      this.sendInvoiceData(invoiceRequest);
+    }
+  }
+
+  sendInvoiceData(request: InvoiceSaveRequest) {
+    this.invoiceService.sendInvoiceData(request).subscribe(
+      (response) => {
+        if (response.status) {
+          console.log('Data Saved');
+        }
+      },
+      (error) => {
+        console.error(error);
+      }
+    );
+  }
 }

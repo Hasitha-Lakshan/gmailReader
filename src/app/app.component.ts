@@ -45,6 +45,7 @@ export class AppComponent {
           const index = mail.payload.headers.findIndex(
             (header) => header.name === 'Subject'
           );
+
           if (
             index > -1 &&
             mail.payload.headers[index].value.toLowerCase().includes('invoice')

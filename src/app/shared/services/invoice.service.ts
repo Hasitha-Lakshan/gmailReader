@@ -2,7 +2,11 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { apiEndpoint } from '../apis/api-end-points';
-import { CommonResponse, InvoiceSaveRequest } from '../models/invoice';
+import {
+  CommonResponse,
+  InvoiceDataResponse,
+  InvoiceSaveRequest,
+} from '../models/invoice';
 
 @Injectable({
   providedIn: 'root',
@@ -21,6 +25,13 @@ export class InvoiceService {
     return this.http.post<CommonResponse>(
       this.baseUrl.saveInvoiceData,
       invoiceRequest,
+      this.httpOptions
+    );
+  }
+
+  getAllInvoices(): Observable<InvoiceDataResponse[]> {
+    return this.http.get<InvoiceDataResponse[]>(
+      this.baseUrl.getAllInvoiceData,
       this.httpOptions
     );
   }

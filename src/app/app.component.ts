@@ -1,9 +1,12 @@
 import { Component } from '@angular/core';
 import * as moment from 'moment';
 import { lastValueFrom } from 'rxjs';
-import { GoogleService, UserInfo } from './shared/google.service';
+import { GoogleService, UserInfo } from './shared/services/google.service';
 import { Gmail, MappedGmail } from './shared/models/gmail';
-import { InvoiceSaveRequest } from './shared/models/invoice';
+import {
+  InvoiceDataResponse,
+  InvoiceSaveRequest,
+} from './shared/models/invoice';
 import { InvoiceService } from './shared/services/invoice.service';
 
 @Component({
@@ -13,6 +16,9 @@ import { InvoiceService } from './shared/services/invoice.service';
 })
 export class AppComponent {
   userInfo?: UserInfo;
+  invoiceDataList: InvoiceDataResponse[] = [];
+  isSavedAllInvoices: boolean = false;
+  isReceivedAllInvoices: boolean = false;
 
   constructor(
     private readonly googleApi: GoogleService,
@@ -31,8 +37,10 @@ export class AppComponent {
     this.googleApi.signOut();
   }
 
-  async getEmails() {
+  async sendAllInvoices() {
+    this.isSavedAllInvoices = true;
     if (!this.userInfo) {
+      this.isSavedAllInvoices = false;
       return;
     }
 
@@ -104,8 +112,31 @@ export class AppComponent {
         if (response.status) {
           console.log('Data Saved');
         }
+        this.isSavedAllInvoices = false;
       },
       (error) => {
+        this.isSavedAllInvoices = false;
+        console.error(error);
+      }
+    );
+  }
+
+  getAllInvoices() {
+    this.isReceivedAllInvoices = true;
+    this.invoiceService.getAllInvoices().subscribe(
+      (response) => {
+        if (response.length > 0) {
+          this.invoiceDataList = response.map((item) => {
+            return {
+              ...item,
+              date: moment(new Date(item.date)).format('DD-MM-yyyy hh:mm:ss A'),
+            };
+          });
+        }
+        this.isReceivedAllInvoices = false;
+      },
+      (error) => {
+        this.isReceivedAllInvoices = false;
         console.error(error);
       }
     );

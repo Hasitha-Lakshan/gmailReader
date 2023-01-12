@@ -1,0 +1,8 @@
+.spinner-border {
+    --bs-spinner-width: 1rem;
+    --bs-spinner-height: 1rem;
+}
+
+.main-btn {
+    width: 270px;
+}

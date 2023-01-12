@@ -1,11 +1,23 @@
-<div *ngIf="isLoggedIn()">
-  <div class="container">Hi and welcome!</div>
-  <div class="container">Name: {{ userInfo?.info?.name }}</div>
-
+<ng-container *ngIf="isLoggedIn()">
+  <app-header [username]="userInfo?.info?.name" (logoutEventEmitter)="logout()"></app-header>
   <div class="container">
-    <button (click)="getEmails()">Add Invoice Mails to Database</button>
+    <div class="row my-5">
+      <div class="col text-start ms-3">
+        <button type="button" class="btn btn-dark main-btn" (click)="sendAllInvoices()">
+          Add Invoice Mails to Database
+          <i *ngIf="isSavedAllInvoices" class="spinner-border" role="status"></i>
+        </button>
+      </div>
+      <div class="col text-end me-3">
+        <button type="button" class="btn btn-dark main-btn" (click)="getAllInvoices()">
+          Get all invoices from Database
+          <i *ngIf="isReceivedAllInvoices" class="spinner-border" role="status"></i>
+        </button>
+      </div>
+    </div>
   </div>
+  <hr>
   <div class="container">
-    <button (click)="logout()">Logout from Google</button>
+    <app-table [invoiceDataList]="invoiceDataList"></app-table>
   </div>
-</div>
+</ng-container>

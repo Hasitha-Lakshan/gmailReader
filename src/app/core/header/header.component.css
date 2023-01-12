@@ -1,0 +1,11 @@
+.logout {
+    cursor: pointer;
+}
+
+.nav-link {
+    color: white;
+}
+
+.logout:hover {
+    color: red;
+}

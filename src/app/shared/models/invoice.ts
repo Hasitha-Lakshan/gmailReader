@@ -12,3 +12,12 @@ export interface CommonResponse {
   status: boolean;
   message: string;
 }
+
+export interface InvoiceDataResponse {
+  invoiceId: string;
+  subject: string;
+  date: any;
+  invoiceFrom: string;
+  invoiceTo: string;
+  body: string;
+}

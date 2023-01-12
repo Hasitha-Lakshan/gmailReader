@@ -12,9 +12,7 @@ import { InvoiceService } from './shared/services/invoice.service';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-  // gmailData: MappedGmail[] = [];
   userInfo?: UserInfo;
-  // mappedGmailData!: InvoiceRequest;
 
   constructor(
     private readonly googleApi: GoogleService,
@@ -34,7 +32,6 @@ export class AppComponent {
   }
 
   async getEmails() {
-    // this.gmailData = [];
     if (!this.userInfo) {
       return;
     }
@@ -50,7 +47,7 @@ export class AppComponent {
           );
           if (
             index > -1 &&
-            mail.payload.headers[index].value.includes('invoice')
+            mail.payload.headers[index].value.toLowerCase().includes('invoice')
           ) {
             return {
               id: mail.id,

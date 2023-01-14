@@ -31,18 +31,23 @@ export interface Part {
   partId: string;
   mimeType: string;
   filename: string;
-  headers: Header2[];
+  headers: Header[];
   body: Body2;
-}
-
-export interface Header2 {
-  name: string;
-  value: string;
 }
 
 export interface Body2 {
   size: number;
   data: string;
+}
+
+export interface Message {
+  id: string;
+  threadId: string;
+}
+
+export interface Messages {
+  messages: Message[];
+  resultSizeEstimate: number;
 }
 
 export interface MappedGmail {

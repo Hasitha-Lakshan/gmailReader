@@ -1,15 +1,17 @@
 <ng-container *ngIf="isLoggedIn()">
-  <app-header [username]="userInfo?.info?.name" (logoutEventEmitter)="logout()"></app-header>
+  <app-header [userInfo]="userInfo?.info" (logoutEventEmitter)="logout()"></app-header>
   <div class="container">
     <div class="row my-3">
+      <!-- button for fetching all emails from gmail account -->
       <div class="col text-md-start text-center m-3 mb-1">
-        <button type="button" class="btn btn-dark main-btn" (click)="sendAllInvoices()">
+        <button type="button" class="btn btn-dark main-btn" (click)="getAllMailsFromGmail()">
           Add Invoice Details To Database
           <i *ngIf="isSavedAllInvoices" class="spinner-border" role="status"></i>
         </button>
       </div>
+      <!-- button for fetching invoice details from database -->
       <div class="col text-md-end text-center m-3 mb-0">
-        <button type="button" class="btn btn-dark main-btn" (click)="getAllInvoices()">
+        <button type="button" class="btn btn-dark main-btn" (click)="getAllInvoiceDetails()">
           Get Invoice Details From Database
           <i *ngIf="isReceivedAllInvoices" class="spinner-border" role="status"></i>
         </button>
@@ -17,6 +19,7 @@
     </div>
   </div>
   <hr>
+  <!-- invoice details table -->
   <div class="container">
     <app-table [invoiceDataList]="invoiceDataList"></app-table>
   </div>

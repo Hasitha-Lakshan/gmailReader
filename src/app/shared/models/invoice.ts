@@ -1,6 +1,5 @@
 export interface InvoiceSaveRequest {
   id: string;
-  body: string;
   date: string;
   invoiceFrom: string;
   invoiceTo: string;
@@ -13,11 +12,17 @@ export interface CommonResponse {
   message: string;
 }
 
-export interface InvoiceDataResponse {
+export interface InvoiceDetailsResponse {
   invoiceId: string;
   subject: string;
   date: any;
   invoiceFrom: string;
   invoiceTo: string;
-  body: string;
+}
+
+export interface MapHeader {
+  subject: string;
+  date: any;
+  invoiceFrom: string;
+  invoiceTo: string;
 }

@@ -1,100 +1,88 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { AuthConfig, OAuthService } from 'angular-oauth2-oidc';
+import { OAuthService } from 'angular-oauth2-oidc';
 import { Observable, Subject } from 'rxjs';
-
-const authCodeFlowConfig: AuthConfig = {
-  // Url of the Identity Provider
-  issuer: 'https://accounts.google.com',
-
-  // strict discovery document disallows urls which not start with issuers url
-  strictDiscoveryDocumentValidation: false,
-
-  // URL of the SPA to redirect the user to after login
-  redirectUri: window.location.origin,
-
-  // The SPA's id. The SPA is registerd with this id at the auth-server
-  // clientId: 'server.code',
-  clientId:
-    '3379262491-l6eic0h8u5hps6q87rceee3tbi5s10po.apps.googleusercontent.com',
-
-  // set the scope for the permissions the client should request
-  scope: 'openid profile email https://mail.google.com',
-
-  showDebugInformation: true,
-};
-
-export interface UserInfo {
-  info: {
-    sub: string;
-    email: string;
-    name: string;
-    picture: string;
-  };
-}
+import { gmailEndpoint } from '../apis/api-end-points';
+import { authCodeFlowConfig } from '../models/auth-config';
+import { Gmail, Messages } from '../models/gmail';
+import { UserInfo } from '../models/user';
 
 @Injectable({
   providedIn: 'root',
 })
-export class GoogleService {
-  gmail = 'https://gmail.googleapis.com';
 
+export class GoogleService {
+
+  private gmailUrl = gmailEndpoint;
+  private httpOptions = { headers: this.authHeader() };
   userProfileSubject = new Subject<UserInfo>();
 
   constructor(
     private readonly oAuthService: OAuthService,
-    private readonly httpClient: HttpClient
+    private readonly http: HttpClient
   ) {
-    // confiure oauth2 service
+    // configure oauth2 service
     oAuthService.configure(authCodeFlowConfig);
     // manually configure a logout url, because googles discovery document does not provide it
     oAuthService.logoutUrl = 'https://www.google.com/accounts/Logout';
-
     // loading the discovery document from google, which contains all relevant URL for
     // the OAuth flow, e.g. login url
     oAuthService.loadDiscoveryDocument().then(() => {
-      // // This method just tries to parse the token(s) within the url when
-      // // the auth-server redirects the user back to the web-app
-      // // It doesn't send the user the the login page
+      // This method just tries to parse the token(s) within the url when
+      // the auth-server redirects the user back to the web-app
+      // It doesn't send the user the the login page
       oAuthService.tryLoginImplicitFlow().then(() => {
-        // when not logged in, redirecvt to google for login
+        // when not logged in, redirect to google for login
         // else load user profile
         if (!oAuthService.hasValidAccessToken()) {
-          oAuthService.initLoginFlow();
+          oAuthService.initLoginFlow()
         } else {
-          oAuthService.loadUserProfile().then((userProfile) => {
-            this.userProfileSubject.next(userProfile as UserInfo);
-          });
+          oAuthService.loadUserProfile().then((userProfile) => this.userProfileSubject.next(userProfile as UserInfo));
         }
       });
     });
   }
 
-  emails(userId: string): Observable<any> {
-    return this.httpClient.get(
-      `${this.gmail}/gmail/v1/users/${userId}/messages`,
-      { headers: this.authHeader() }
-    );
+  /**
+   * This function is used to fetch all the mails using the user Id from gmail 
+   * @param userId 
+   * @returns : Messages type Observable
+   */
+  getAllMails(userId: string): Observable<Messages> {
+    return this.http.get<Messages>(`${this.gmailUrl.gmailUsers}${userId}/messages`, this.httpOptions);
   }
 
-  getMail(userId: string, mailId: string): Observable<any> {
-    return this.httpClient.get(
-      `${this.gmail}/gmail/v1/users/${userId}/messages/${mailId}`,
-      { headers: this.authHeader() }
-    );
+  /**
+   * This function is used to fetch a particular mail using the user Id and its mail Id from gmail 
+   * @param userId 
+   * @param mailId
+   * @returns : Gmail type Observable
+   */
+  getMail(userId: string, mailId: string): Observable<Gmail> {
+    return this.http.get<Gmail>(`${this.gmailUrl.gmailUsers}${userId}/messages/${mailId}`, this.httpOptions);
   }
 
+  /**
+   * This function is used to get HttpHeaders for authorization
+   * @returns : HttpHeaders
+   */
+  private authHeader(): HttpHeaders {
+    return new HttpHeaders({ Authorization: `Bearer ${this.oAuthService.getAccessToken()}` });
+  }
+
+  /**
+   * This function is used to validate the token
+   * @returns : token status
+   */
   isLoggedIn(): boolean {
     return this.oAuthService.hasValidAccessToken();
   }
 
+  /**
+   * This function is used to logout from the google account
+   */
   signOut() {
     this.oAuthService.logOut();
   }
 
-  private authHeader(): HttpHeaders {
-    return new HttpHeaders({
-      Authorization: `Bearer ${this.oAuthService.getAccessToken()}`,
-    });
-  }
 }

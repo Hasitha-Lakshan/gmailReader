@@ -9,3 +9,8 @@
 .logout:hover {
     color: red;
 }
+
+.nav-link span {
+    font-size: 0.75rem;
+    color: darkgray;
+}

@@ -1,16 +1,25 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { InvoiceDataResponse } from '../../models/invoice';
+import { Component, HostListener, Input, OnInit } from '@angular/core';
+import { InvoiceDetailsResponse } from '../../models/invoice';
 
 @Component({
   selector: 'app-table',
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.css'],
 })
+
 export class TableComponent implements OnInit {
+
+  isShowInvoiceTo: boolean = true;
+
   @Input()
-  invoiceDataList: InvoiceDataResponse[] = [];
+  invoiceDataList: InvoiceDetailsResponse[] = [];
 
-  constructor() {}
+  @HostListener('window:resize')
+  onResize() {
+    this.isShowInvoiceTo = (window.innerWidth < 700) ? false : true;
+  }
 
-  ngOnInit(): void {}
+  constructor() { }
+
+  ngOnInit(): void { }
 }

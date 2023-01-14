@@ -96,10 +96,16 @@ export class AppComponent {
           );
         }
         if (header.name === 'From') {
-          invoiceRequest.invoiceFrom = header.value;
+          invoiceRequest.invoiceFrom = header.value.substring(
+            header.value.indexOf('<') + 1,
+            header.value.indexOf('>')
+          );
         }
         if (header.name === 'To') {
-          invoiceRequest.invoiceTo = header.value;
+          invoiceRequest.invoiceTo = header.value.substring(
+            header.value.indexOf('<') + 1,
+            header.value.indexOf('>')
+          );
         }
       });
       this.sendInvoiceData(invoiceRequest);

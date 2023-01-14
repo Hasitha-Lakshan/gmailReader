@@ -14,7 +14,6 @@ import { UserInfo } from '../models/user';
 export class GoogleService {
 
   private gmailUrl = gmailEndpoint;
-  private httpOptions = { headers: this.authHeader() };
   userProfileSubject = new Subject<UserInfo>();
 
   constructor(
@@ -49,7 +48,7 @@ export class GoogleService {
    * @returns : Messages type Observable
    */
   getAllMails(userId: string): Observable<Messages> {
-    return this.http.get<Messages>(`${this.gmailUrl.gmailUsers}${userId}/messages`, this.httpOptions);
+    return this.http.get<Messages>(`${this.gmailUrl.gmailUsers}${userId}/messages`, { headers: this.authHeader() });
   }
 
   /**
@@ -59,7 +58,7 @@ export class GoogleService {
    * @returns : Gmail type Observable
    */
   getMail(userId: string, mailId: string): Observable<Gmail> {
-    return this.http.get<Gmail>(`${this.gmailUrl.gmailUsers}${userId}/messages/${mailId}`, this.httpOptions);
+    return this.http.get<Gmail>(`${this.gmailUrl.gmailUsers}${userId}/messages/${mailId}`, { headers: this.authHeader() });
   }
 
   /**

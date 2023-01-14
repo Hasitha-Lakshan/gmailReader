@@ -1,16 +1,16 @@
 <ng-container *ngIf="isLoggedIn()">
   <app-header [username]="userInfo?.info?.name" (logoutEventEmitter)="logout()"></app-header>
   <div class="container">
-    <div class="row my-5">
-      <div class="col text-start ms-3">
+    <div class="row my-3">
+      <div class="col text-md-start text-center m-3 mb-1">
         <button type="button" class="btn btn-dark main-btn" (click)="sendAllInvoices()">
-          Add Invoice Mails to Database
+          Add Invoice Details To Database
           <i *ngIf="isSavedAllInvoices" class="spinner-border" role="status"></i>
         </button>
       </div>
-      <div class="col text-end me-3">
+      <div class="col text-md-end text-center m-3 mb-0">
         <button type="button" class="btn btn-dark main-btn" (click)="getAllInvoices()">
-          Get all invoices from Database
+          Get Invoice Details From Database
           <i *ngIf="isReceivedAllInvoices" class="spinner-border" role="status"></i>
         </button>
       </div>

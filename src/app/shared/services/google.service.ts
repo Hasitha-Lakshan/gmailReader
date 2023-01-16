@@ -29,12 +29,12 @@ export class GoogleService {
     oAuthService.loadDiscoveryDocument().then(() => {
       // This method just tries to parse the token(s) within the url when
       // the auth-server redirects the user back to the web-app
-      // It doesn't send the user the the login page
+      // It doesn't send the user the login page
       oAuthService.tryLoginImplicitFlow().then(() => {
         // when not logged in, redirect to google for login
         // else load user profile
         if (!oAuthService.hasValidAccessToken()) {
-          oAuthService.initLoginFlow()
+          oAuthService.initLoginFlow();
         } else {
           oAuthService.loadUserProfile().then((userProfile) => this.userProfileSubject.next(userProfile as UserInfo));
         }

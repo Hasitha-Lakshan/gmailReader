@@ -27,6 +27,7 @@ export class AppComponent {
 
   /**
    * This function is used to fetch all the emails from gmail account
+   * {userId, mailId}
    */
   async getAllMailsFromGmail() {
     this.isSavedAllInvoices = true;
